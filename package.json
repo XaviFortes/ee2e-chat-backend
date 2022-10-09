@@ -1,5 +1,5 @@
 {
-  "name": "Chat_UFV",
+  "name": "ChatUFV",
   "version": "1.0.0",
   "description": "Node.js Demo for JWT Authentication",
   "main": "server.js",
