@@ -1,0 +1,6 @@
+node_modules
+node_modules/
+package-lock.json
+config/db.config.js
+config/auth.config.js
+config/
