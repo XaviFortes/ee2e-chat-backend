@@ -3,7 +3,7 @@ const User = db.user;
 
 exports.allAccess = async (req, res) => {
   var users = await User.findAll({
-    attributes: ['id', 'nick', 'email']
+    attributes: ['id', 'uuid', 'nick', 'email']
   });
   res.status(200).send(users);
 };

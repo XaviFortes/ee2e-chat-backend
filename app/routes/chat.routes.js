@@ -17,6 +17,12 @@ module.exports = function(app) {
   );
 
   app.post(
+    "/api/chat/createChatRoom",
+    
+    crController.createChatRoom
+  );
+
+  app.post(
     "/api/chat/postMessage",
     [authJwt.verifyToken, authJwt.isModerator],
     crController.postMessage

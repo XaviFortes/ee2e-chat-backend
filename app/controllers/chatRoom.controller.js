@@ -1,7 +1,9 @@
 const db = require("../models");
 const config = require("../config/auth.config");
+const { authJwt } = require("../middleware");
 const User = db.user;
 const Role = db.role;
+const Chat = db.chat;
 
 const Op = db.Sequelize.Op;
 
@@ -54,7 +56,7 @@ exports.getChatRooms = (req, res) => {
 
   db.chatRoom.findAll({
     where: {
-      userId: req.body.userId
+      uuid: req.body.userId
     }
   })
     .then(data => {
@@ -71,41 +73,59 @@ exports.getChatRooms = (req, res) => {
 exports.createChatRoom = (req, res) => {
   // Save ChatRoom to Database
   console.log("Processing func -> CreateChatRoom");
+  console.log(req.body);
 
   const chatRoom = {
-    name: req.body.name,
-    userId: req.body.userId,
-    createdAt: req.body.createdAt,
-    updatedAt: req.body.updatedAt
+    // get uuid from user from jwt
+    chat_owner: req.body.chat_owner,
+    chat_name: req.body.name,
+    chat_desc: req.body.desc,
+    chat_pic: req.body.pic_url
   };
 
-  db.chatRoom.create(chatRoom)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the ChatRoom."
-      });
+  Chat.create(chatRoom).then(data => {
+    res.send(data);
+  })
+  .catch(err => {
+    res.status(500).send({
+      message:
+        err.message || "Some error occurred while creating the ChatRoom."
     });
+  }
+  );
 };
 
 exports.deleteChatRoom = (req, res) => {
   console.log("Processing func -> DeleteChatRoom");
 
-  db.chatRoom.destroy({
+  // Get user from jwt and check if user is chat owner
+  Chat.findOne({
     where: {
-      id: req.body.id
+      uuid: authJwt.verifyToken(req.headers.authorization).id
     }
   })
     .then(data => {
-      res.send(data);
+      if (data.chat_owner == req.body.userId) {
+        db.chatRoom.destroy({
+          where: {
+            chat_uuid: req.body.chat_id
+          }
+        })
+          .then(data => {
+            res.send(data);
+          })
+          .catch(err => {
+            res.status(500).send({
+              message:
+                err.message || "Some error occurred while deleting chat room."
+            });
+          });
+      }
     })
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while deleting chat room."
+          err.message || "Some error occurred while retrieving chat rooms."
       });
     });
 };

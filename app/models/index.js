@@ -8,6 +8,9 @@ const sequelize = new Sequelize(
   {
     host: config.HOST,
     dialect: config.dialect,
+    define: {
+      timestamps: false
+    },
     operatorsAliases: false,
 
     pool: {
@@ -26,6 +29,7 @@ db.sequelize = sequelize;
 
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.role = require("../models/role.model.js")(sequelize, Sequelize);
+db.chat = require("../models/chat.model.js")(sequelize, Sequelize);
 
 /*
 db.role.belongsToMany(db.user, {

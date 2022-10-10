@@ -15,6 +15,7 @@ exports.signup = (req, res) => {
   // Save User to Database
   console.log("Processing func -> SignUp");
   console.log(uuidv4());
+  console.log(req.body);
   User.create({
     // Generate a UUID
 
@@ -50,7 +51,7 @@ exports.signup = (req, res) => {
 exports.signin = (req, res) => {
   User.findOne({
     where: {
-      username: req.body.username
+      email: req.body.email
     }
   })
     .then(user => {
