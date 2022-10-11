@@ -17,7 +17,12 @@ module.exports = (sequelize, Sequelize) => {
     last_seen: {
       type: Sequelize.DATE,
       defaultValue: Sequelize.NOW
+    },
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW
     }
+
     
   });
 

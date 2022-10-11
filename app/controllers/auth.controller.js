@@ -75,12 +75,21 @@ exports.signin = (req, res) => {
         expiresIn: 86400 // 24 hours
       });
 
+      var cookieOptions = {
+        expires: new Date(
+          Date.now() + 24 * 60 * 60 * 1000
+        ),
+        httpOnly: true
+      }
+
+      
+
       var authorities = [];
       user.getRoles().then(roles => {
         for (let i = 0; i < roles.length; i++) {
           authorities.push("ROLE_" + roles[i].name.toUpperCase());
         }
-        res.status(200).send({
+        res.status(200).cookie('x-access-token', token, cookieOptions).send({
           uid: user.uid,
           username: user.username,
           email: user.email,

@@ -30,8 +30,9 @@ db.sequelize = sequelize;
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.role = require("../models/role.model.js")(sequelize, Sequelize);
 db.chat = require("../models/chat.model.js")(sequelize, Sequelize);
+db.message = require("./message.model.js")(sequelize, Sequelize);
 
-/*
+
 db.role.belongsToMany(db.user, {
   through: "user_roles",
   foreignKey: "roleId",
@@ -43,7 +44,7 @@ db.user.belongsToMany(db.role, {
   foreignKey: "userUid",
   otherKey: "roleId"
 });
-*/
+
 
 db.ROLES = ["user", "admin", "moderator"];
 

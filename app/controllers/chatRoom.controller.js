@@ -1,6 +1,8 @@
 const db = require("../models");
+const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config");
 const { authJwt } = require("../middleware");
+const { Sequelize } = require("../models");
 const User = db.user;
 const Role = db.role;
 const Chat = db.chat;
@@ -13,13 +15,12 @@ exports.postMessage = (req, res) => {
   
     const message = {
       message: req.body.message,
-      userId: req.body.userId,
-      chatRoomId: req.body.chatRoomId,
-      createdAt: req.body.createdAt,
-      updatedAt: req.body.updatedAt
+      from_uid: req.body.userId,
+      to_uid: req.body.toUserId,
+      chat_id: req.body.chatId
     };
   
-    db.message.create(message)
+    message.create(message)
       .then(data => {
         res.send(data);
       })
@@ -53,10 +54,13 @@ exports.getMessages = (req, res) => {
 
 exports.getChatRooms = (req, res) => {
   console.log("Processing func -> GetChatRooms");
+  // Get user from jwt cookies and check if user is chat owner
+  var uuid = jwt.verify(req.cookies["x-access-token"], config.secret).uuid;
+  console.log(uuid);
 
-  db.chatRoom.findAll({
+  Chat.findAll({
     where: {
-      uuid: req.body.userId
+      chat_owner: uuid
     }
   })
     .then(data => {
@@ -75,9 +79,11 @@ exports.createChatRoom = (req, res) => {
   console.log("Processing func -> CreateChatRoom");
   console.log(req.body);
 
+  var uuid = jwt.verify(req.cookies["x-access-token"], config.secret).uuid;
+
   const chatRoom = {
     // get uuid from user from jwt
-    chat_owner: req.body.chat_owner,
+    chat_owner: uuid,
     chat_name: req.body.name,
     chat_desc: req.body.desc,
     chat_pic: req.body.pic_url
