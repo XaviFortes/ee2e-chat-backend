@@ -6,21 +6,24 @@ const { Sequelize } = require("../models");
 const User = db.user;
 const Role = db.role;
 const Chat = db.chat;
+const Message = db.message;
+const chat_users = db.chat_users;
 
 const Op = db.Sequelize.Op;
 
 exports.postMessage = (req, res) => {
     // Save Message to Database
     console.log("Processing func -> PostMessage");
+
+    var uuid = jwt.verify(req.cookies["x-access-token"], config.secret).uuid;
   
-    const message = {
-      message: req.body.message,
-      from_uid: req.body.userId,
-      to_uid: req.body.toUserId,
+    const messagebody = {
+      msg_txt: req.body.message,
+      from_uid: uuid,
       chat_id: req.body.chatId
     };
   
-    message.create(message)
+    Message.create(messagebody)
       .then(data => {
         res.send(data);
       })
@@ -36,9 +39,10 @@ exports.postMessage = (req, res) => {
 exports.getMessages = (req, res) => {
   console.log("Processing func -> GetMessages");
 
-  db.message.findAll({
+  Message.findAll({
+    attributes: ['msg_txt', 'from_uid', 'sent_datetime'],
     where: {
-      chatRoomId: req.body.chatRoomId
+      chat_id: req.body.chatId
     }
   })
     .then(data => {
@@ -89,16 +93,31 @@ exports.createChatRoom = (req, res) => {
     chat_pic: req.body.pic_url
   };
 
+  
+  var tdata;
   Chat.create(chatRoom).then(data => {
+    tdata = data;
+
+    chat_users.create({
+      chat_id: tdata.chat_id,
+      uid: uuid
+    });
+
     res.send(data);
+
+    
+    
   })
   .catch(err => {
     res.status(500).send({
       message:
         err.message || "Some error occurred while creating the ChatRoom."
     });
-  }
-  );
+  });
+    // Get the uuid of the chat room that was just created
+    
+
+    
 };
 
 exports.deleteChatRoom = (req, res) => {

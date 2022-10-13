@@ -1,9 +1,10 @@
 module.exports = (sequelize, Sequelize) => {
   const Message = sequelize.define("messages", {
-    from_uid: {
-      type: Sequelize.STRING
+    msg_uuid: {
+      type: Sequelize.STRING,
+      defaultValue: Sequelize.UUIDV4,
     },
-    to_uid: {
+    from_uid: {
       type: Sequelize.STRING
     },
     msg_txt: {
