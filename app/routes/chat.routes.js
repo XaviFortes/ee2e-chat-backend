@@ -16,7 +16,7 @@ module.exports = function(app) {
     crController.getChatRooms
   );
 
-  app.get(
+  app.post(
     "/api/chat/getMessages",
     [authJwt.verifyToken],
     crController.getMessages
