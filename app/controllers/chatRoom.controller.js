@@ -62,13 +62,30 @@ exports.getChatRooms = (req, res) => {
   var uuid = jwt.verify(req.cookies["x-access-token"], config.secret).uuid;
   console.log(uuid);
 
-  Chat.findAll({
+  chat_users.findAll({
+    // Find where chat_owner is the user's uuid or chat_users has the user's uuid
     where: {
-      chat_owner: uuid
+      uid: uuid
     }
   })
     .then(data => {
-      res.send(data);
+      Chat.findAll({
+        where: {
+          chat_id: {
+            [Op.in]: data.map(chat => chat.chat_id)
+          }
+        }
+      })
+        .then(data => {
+          res.send(data);
+        })
+      .catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while retrieving chatrooms."
+        });
+      }
+    );
     })
     .catch(err => {
       res.status(500).send({
