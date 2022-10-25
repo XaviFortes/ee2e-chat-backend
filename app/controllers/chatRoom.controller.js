@@ -78,6 +78,30 @@ exports.getChatRooms = (req, res) => {
     });
 };
 
+exports.joinChatRoom = (req, res) => {
+  console.log("Processing func -> JoinChatRoom");
+  // Get user from jwt cookies and check if user is chat owner
+  var uuid = jwt.verify(req.cookies["x-access-token"], config.secret).uuid;
+  console.log(uuid);
+
+  const chatbody = {
+    chat_id: req.body.chatId,
+    user_id: uuid
+  };
+
+  chat_users.create(chatbody)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while joining chat room."
+      });
+  });
+};
+
+
 exports.createChatRoom = (req, res) => {
   // Save ChatRoom to Database
   console.log("Processing func -> CreateChatRoom");
@@ -90,7 +114,8 @@ exports.createChatRoom = (req, res) => {
     chat_owner: uuid,
     chat_name: req.body.name,
     chat_desc: req.body.desc,
-    chat_pic: req.body.pic_url
+    chat_pic: req.body.pic_url,
+    isPublic: req.body.isPublic
   };
 
   

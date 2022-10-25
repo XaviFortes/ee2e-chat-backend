@@ -16,6 +16,10 @@ module.exports = (sequelize, Sequelize) => {
     },
     chat_pic: {
       type: Sequelize.STRING
+    },
+    isPublic: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true
     }
     
   });
