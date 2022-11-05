@@ -3,11 +3,20 @@ const cors = require("cors");
 const cookieParser = require('cookie-parser');
 
 const app = express();
-
-var corsOptions = {
-  origin: "http://127.0.0.1:3000",
+// Add two origins to the whitelist
+const whitelist = ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1'];
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || origin == undefined) {
+      callback(null, true)
+    } else {
+      // Log who tried to access the server
+      console.log("Origin: " + origin);
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   credentials: true
-};
+}
 
 app.use(cors(corsOptions));
 

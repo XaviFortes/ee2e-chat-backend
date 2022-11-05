@@ -40,7 +40,7 @@ exports.getMessages = (req, res) => {
   console.log("Processing func -> GetMessages");
 
   Message.findAll({
-    attributes: ['msg_txt', 'from_uid', 'sent_datetime'],
+    attributes: ['msg_txt', 'msg_uuid', 'from_uid', 'sent_datetime'],
     where: {
       chat_id: req.body.chatId
     }
@@ -103,19 +103,33 @@ exports.joinChatRoom = (req, res) => {
 
   const chatbody = {
     chat_id: req.body.chatId,
-    user_id: uuid
+    uid: uuid
   };
 
-  chat_users.create(chatbody)
+  // Check if user is already in chat room and if not add them with chat_id and uid
+  chat_users.findOne({
+    where: {
+      chat_id: req.body.chatId,
+      uid: uuid
+    }
+  })
     .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while joining chat room."
-      });
-  });
+      if (data == null) {
+        chat_users.create(chatbody)
+          .then(data => {
+            res.send(data);
+          })
+          .catch(err => {
+            res.status(500).send({
+              message:
+                err.message || "Some error occurred while creating the Chat."
+            });
+          });
+      } else {
+        res.send({ message: "User is already in chat room" });
+      }
+    }
+  );
 };
 
 

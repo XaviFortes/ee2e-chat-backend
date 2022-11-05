@@ -8,6 +8,20 @@ exports.allAccess = async (req, res) => {
   res.status(200).send(users);
 };
 
+exports.getUser = async (req, res) => {
+  User.findOne({
+    attributes: ['uuid', 'nick', 'profile_pic', 'last_seen'],
+    where: {
+      uuid: req.body.uuid
+    }
+  }).then(user => {
+    res.status(200).send(user);
+  }).catch(err => {
+    res.status(500).send({ message: err.message });
+  });
+};
+
+
 exports.userBoard = (req, res) => {
   res.status(200).send("User Content.");
 };
