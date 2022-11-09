@@ -102,3 +102,8 @@ exports.signin = (req, res) => {
       res.status(500).send({ message: err.message });
     });
 };
+
+
+exports.signout = (req, res) => {
+  res.clearCookie('x-access-token').send({ message: "User was signed out successfully!" });
+};

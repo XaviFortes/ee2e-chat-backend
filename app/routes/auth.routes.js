@@ -19,5 +19,7 @@ module.exports = function(app) {
     controller.signup
   );
 
+  app.get("/api/auth/logout", controller.signout);
+
   app.post("/api/auth/signin", controller.signin);
 };

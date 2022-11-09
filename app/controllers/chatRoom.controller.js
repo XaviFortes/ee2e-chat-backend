@@ -156,7 +156,7 @@ exports.createChatRoom = (req, res) => {
 
     chat_users.create({
       chat_id: tdata.chat_id,
-      uid: uuid
+      user_uid: uuid
     });
 
     res.send(data);
