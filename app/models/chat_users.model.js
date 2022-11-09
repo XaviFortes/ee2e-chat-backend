@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
   const Chat_users = sequelize.define("chat_users", {
-    uid: {
+    user_uid: {
       type: Sequelize.UUID
     },
     chat_id: {

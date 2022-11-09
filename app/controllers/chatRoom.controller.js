@@ -65,7 +65,7 @@ exports.getChatRooms = (req, res) => {
   chat_users.findAll({
     // Find where chat_owner is the user's uuid or chat_users has the user's uuid
     where: {
-      uid: uuid
+      user_uid: uuid
     }
   })
     .then(data => {

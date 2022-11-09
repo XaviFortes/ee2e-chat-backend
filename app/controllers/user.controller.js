@@ -21,6 +21,11 @@ exports.getUser = async (req, res) => {
   });
 };
 
+exports.checkJWT = (req, res) => {
+  res.status(200).send({ message: "JWT is valid" });
+};
+
+
 
 exports.userBoard = (req, res) => {
   res.status(200).send("User Content.");

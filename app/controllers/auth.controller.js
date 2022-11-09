@@ -72,12 +72,12 @@ exports.signin = (req, res) => {
       }
 
       var token = jwt.sign({ uuid: user.uuid, id: user.id }, config.secret, {
-        expiresIn: config.tokenExpirationTime
+        expiresIn: config.tokenExpirationTime // 24 hours
       });
 
       var cookieOptions = {
         expires: new Date(
-          Date.now() + config.tokenExpirationTime
+          Date.now() + config.tokenExpirationTime * 1000
         ),
         httpOnly: true
       }
