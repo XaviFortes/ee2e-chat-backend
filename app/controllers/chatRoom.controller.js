@@ -103,14 +103,14 @@ exports.joinChatRoom = (req, res) => {
 
   const chatbody = {
     chat_id: req.body.chatId,
-    uid: uuid
+    user_uid: uuid
   };
 
   // Check if user is already in chat room and if not add them with chat_id and uid
   chat_users.findOne({
     where: {
       chat_id: req.body.chatId,
-      uid: uuid
+      user_uid: uuid
     }
   })
     .then(data => {

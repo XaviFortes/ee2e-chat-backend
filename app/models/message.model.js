@@ -3,6 +3,7 @@ module.exports = (sequelize, Sequelize) => {
     msg_uuid: {
       type: Sequelize.STRING,
       defaultValue: Sequelize.UUIDV4,
+      primaryKey: true
     },
     from_uid: {
       type: Sequelize.STRING
