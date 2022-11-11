@@ -41,6 +41,7 @@ exports.getMessages = (req, res) => {
 
   Message.findAll({
     attributes: ['msg_txt', 'msg_uuid', 'from_uid', 'sent_datetime'],
+    order: [['sent_datetime', 'ASC']],
     where: {
       chat_id: req.body.chatId
     }
