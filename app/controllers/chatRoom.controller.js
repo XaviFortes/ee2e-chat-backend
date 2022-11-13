@@ -231,6 +231,48 @@ exports.deleteMessage = (req, res) => {
     });
 };
 
+exports.modifyChatRoom = (req, res) => {
+  console.log("Processing func -> ModifyChatRoom");
+
+  // Get user from jwt and check if user is chat owner or role in chat_users is admin (4)
+  chat_users.findOne({
+    where: {
+      user_uid: authJwt.verifyToken(req.headers.authorization).id,
+      chat_id: req.body.chat_id,
+      role: 4
+    }
+  })
+    .then(data => {
+      if (data.chat_owner == req.body.userId) {
+        db.chatRoom.update({
+          chat_name: req.body.name,
+          chat_desc: req.body.desc,
+          chat_pic: req.body.pic_url,
+          isPublic: req.body.isPublic
+        }, {
+          where: {
+            chat_id: req.body.chat_id
+          }
+        })
+          .then(data => {
+            res.send(data);
+          })
+          .catch(err => {
+            res.status(500).send({
+              message:
+                err.message || "Some error occurred while modifying chat room."
+            });
+          });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving chat rooms."
+      });
+    });
+};
+
 exports.markConversationRead = (req, res) => {
     console.log("Processing func -> MarkConversationRead");
     
