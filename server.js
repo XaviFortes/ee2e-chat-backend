@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 
 const app = express();
 // Add two origins to the whitelist
-const whitelist = ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1', 'http://172.16.0.2', 'https://chat.karasu.es'];
+const whitelist = ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1', 'http://172.16.0.2:5173', 'https://chat.karasu.es'];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || origin == undefined) {
