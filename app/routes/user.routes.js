@@ -16,6 +16,8 @@ module.exports = function(app) {
 
   app.get("/api/user/checkJWT", [authJwt.verifyToken], controller.checkJWT);
 
+  app.get("/api/user/isLogged", controller.isLoggedIn);
+
   app.get(
     "/api/test/user",
     [authJwt.verifyToken],
