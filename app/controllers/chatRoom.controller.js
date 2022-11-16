@@ -96,6 +96,46 @@ exports.getChatRooms = (req, res) => {
     });
 };
 
+exports.getChatInfo = (req, res) => {
+  console.log("Processing func -> GetChatInfo");
+  const chatId = req.body.chatId;
+
+  Chat.findOne({
+    where: {
+      chat_id: chatId
+    }
+  })
+    .then(data => {
+      res.send(data);
+    }) 
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving chat info."
+      });
+    });
+};
+
+exports.getChatUsers = (req, res) => {
+  console.log("Processing func -> GetChatMembers");
+  const chatId = req.body.chatId;
+
+  chat_users.findAll({
+    where: {
+      chat_id: chatId
+    }
+  })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving chat members."
+      });
+    });
+};
+
 exports.joinChatRoom = (req, res) => {
   console.log("Processing func -> JoinChatRoom");
   // Get user from jwt cookies and check if user is chat owner
@@ -265,7 +305,7 @@ exports.modifyChatRoom = (req, res) => {
             });
         }
         if (req.body.desc) {
-          db.chatRoom.update({
+          chat.update({
             chat_desc: req.body.desc
           }
             , {
@@ -284,7 +324,7 @@ exports.modifyChatRoom = (req, res) => {
             });
         }
         if (req.body.pic_url) {
-          db.chatRoom.update({
+          chat.update({
             chat_pic: req.body.pic_url
           }
             , {

@@ -17,6 +17,18 @@ module.exports = function(app) {
   );
 
   app.post(
+    "/api/chat/getChat",
+    [authJwt.verifyToken],
+    crController.getChatInfo
+  );
+
+  app.post(
+    "/api/chat/getChatUsers",
+    [authJwt.verifyToken],
+    crController.getChatUsers
+  )
+
+  app.post(
     "/api/chat/getMessages",
     [authJwt.verifyToken],
     crController.getMessages
