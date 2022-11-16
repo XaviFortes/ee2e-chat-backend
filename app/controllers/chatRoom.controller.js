@@ -2,7 +2,7 @@ const db = require("../models");
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config");
 const { authJwt } = require("../middleware");
-const { Sequelize } = require("../models");
+const { Sequelize, chat } = require("../models");
 const User = db.user;
 const Role = db.role;
 const Chat = db.chat;
@@ -234,37 +234,75 @@ exports.deleteMessage = (req, res) => {
 exports.modifyChatRoom = (req, res) => {
   console.log("Processing func -> ModifyChatRoom");
 
+  const user_uid = jwt.verify(req.cookies["x-access-token"], config.secret).uuid;
   // Get user from jwt and check if user is chat owner or role in chat_users is admin (4)
   chat_users.findOne({
     where: {
-      user_uid: authJwt.verifyToken(req.headers.authorization).id,
+      user_uid: user_uid,
       chat_id: req.body.chat_id,
       role: 4
     }
   })
     .then(data => {
-      if (data.chat_owner == req.body.userId) {
-        db.chatRoom.update({
-          chat_name: req.body.name,
-          chat_desc: req.body.desc,
-          chat_pic: req.body.pic_url,
-          isPublic: req.body.isPublic
-        }, {
-          where: {
-            chat_id: req.body.chat_id
-          }
-        })
-          .then(data => {
-            res.send(data);
-          })
-          .catch(err => {
-            res.status(500).send({
-              message:
-                err.message || "Some error occurred while modifying chat room."
+      // Make fields optional
+        if (req.body.name) {
+          chat.update(
+            { chat_name: req.body.name },
+            {
+              where: {
+                chat_id: req.body.chat_id
+              }
+            }
+          )
+            .then(data => {
+              res.send(data);
+            })
+            .catch(err => {
+              res.status(500).send({
+                message:
+                  err.message || "Some error occurred while modifying chat name."
+              });
             });
-          });
-      }
-    })
+        }
+        if (req.body.desc) {
+          db.chatRoom.update({
+            chat_desc: req.body.desc
+          }
+            , {
+              where: {
+                chat_id: req.body.chat_id
+              }
+            })
+            .then(data => {
+              res.send(data);
+            })
+            .catch(err => {
+              res.status(500).send({
+                message:
+                  err.message || "Some error occurred while modifying chat description."
+              });
+            });
+        }
+        if (req.body.pic_url) {
+          db.chatRoom.update({
+            chat_pic: req.body.pic_url
+          }
+            , {
+              where: {
+                chat_id: req.body.chat_id
+              }
+            })
+            .then(data => {
+              res.send(data);
+            })
+            .catch(err => {
+              res.status(500).send({
+                message:
+                  err.message || "Some error occurred while modifying chat picture."
+              });
+            });
+        }
+    })  
     .catch(err => {
       res.status(500).send({
         message:

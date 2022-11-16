@@ -38,7 +38,13 @@ module.exports = function(app) {
     "/api/chat/joinChatRoom",
     [authJwt.verifyToken],
     crController.joinChatRoom
-  )
+  );
+
+  app.post(
+    "/api/chat/modifyChatRoom",
+    [authJwt.verifyToken],
+    crController.modifyChatRoom
+  );
 
   /*
   app.get(
