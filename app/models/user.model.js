@@ -14,6 +14,10 @@ module.exports = (sequelize, Sequelize) => {
     password: {
       type: Sequelize.STRING
     },
+    isActivated: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false
+    },
     last_seen: {
       type: Sequelize.DATE,
       defaultValue: Sequelize.NOW

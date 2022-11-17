@@ -1,6 +1,8 @@
 const db = require("../models");
+const { email } = require("../config/auth.config");
 const ROLES = db.ROLES;
 const User = db.user;
+const nodemailer = require('nodemailer');
 
 checkDuplicateUsernameOrEmail = (req, res, next) => {
   // Username
@@ -47,7 +49,7 @@ checkRolesExisted = (req, res, next) => {
   }
   
   next();
-};
+};  
 
 const verifySignUp = {
   checkDuplicateUsernameOrEmail: checkDuplicateUsernameOrEmail,
