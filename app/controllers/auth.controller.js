@@ -115,11 +115,14 @@ exports.signin = (req, res) => {
 };
 
 exports.VerifyEmail = (req, res) => {
+  // Get the uuid from the mail
+  console.log("Processing func -> VerifyEmail");
+
   TempCodes.findOne({
     where: {
       // Code match and user too
       code: req.body.code,
-      email: req.body.email,
+      user_id: req.body.user_id,
       type: 1,
     }
   })
@@ -139,7 +142,7 @@ exports.VerifyEmail = (req, res) => {
         isActivated: true
       }, {
         where: {
-          email: req.body.email
+          uuid: req.body.user_id
         }
       })
         .then(() => {
@@ -147,7 +150,7 @@ exports.VerifyEmail = (req, res) => {
           TempCodes.destroy({
             where: {
               code: req.body.code,
-              email: req.body.email,
+              user_id: req.body.user_id,
               type: 1,
             }
           })

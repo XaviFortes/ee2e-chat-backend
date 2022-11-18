@@ -1,5 +1,6 @@
 const { verifySignUp } = require("../middleware");
 const controller = require("../controllers/auth.controller");
+const mailController = require('../controllers/mail.controller');
 
 module.exports = function(app) {
   app.use(function(req, res, next) {
@@ -23,5 +24,7 @@ module.exports = function(app) {
 
   app.post("/api/auth/signin", controller.signin);
 
-  //app.post("/api/auth/verify", controller.verify);
+  app.post("/api/mail/resend", mailController.resendRegisterCode);
+
+  app.post("/api/auth/verify", controller.VerifyEmail);
 };
