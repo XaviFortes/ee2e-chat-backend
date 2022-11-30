@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const app = express();
 // Add two origins to the whitelist
@@ -19,6 +20,9 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions));
+
+// Use compression
+app.use(compression());
 
 // parse requests of content-type - application/json
 app.use(express.json());
