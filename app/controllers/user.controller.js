@@ -23,6 +23,86 @@ exports.getUser = async (req, res) => {
   });
 };
 
+exports.editUser = async (req, res) => {
+  var uuid = jwt.verify(req.cookies["x-access-token"], config.secret).uuid;
+
+  if (req.body.nick) {
+    User.update(
+      { nick: req.body.nick },
+      {
+        where: {
+          uuid: uuid
+        }
+      }
+    )
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while modifying user nick."
+        });
+      });
+  }
+  if (req.body.email) {
+    User.update({
+      email: req.body.email
+    }, {
+        where: {
+          uuid: uuid
+        }
+      })
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while modifying user email."
+        });
+      });
+  }
+  if (req.body.password) {
+    User.update({
+      password: bcrypt.hashSync(req.body.newPassword, 8)
+    }
+      , {
+        where: {
+          uuid: uuid
+        }
+      })
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while modifying user password."
+        });
+      });
+  }
+  if (req.body.profile_pic) {
+    User.update({
+      profile_pic: req.body.profile_pic
+    }
+      , {
+        where: {
+          uuid: uuid
+        }
+      })
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while modifying user profile picture."
+        });
+      });
+  }
+};
+
 exports.checkJWT = (req, res) => {
   res.status(200).send({ message: "JWT is valid" });
 };
