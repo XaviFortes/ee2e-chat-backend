@@ -2,6 +2,9 @@ const db = require("../models");
 const User = db.user;
 const config = require("../config/auth.config");
 const jwt = require("jsonwebtoken");
+const redis = require("redis");
+
+const redisClient = redis.createClient();
 
 exports.allAccess = async (req, res) => {
   var users = await User.findAll({
@@ -103,6 +106,12 @@ exports.editUser = async (req, res) => {
   }
 };
 
+exports.stillLoggedIn = (req, res) => {
+  // Update last_seen in database to current time and date (UTC) with redis
+  client.set(req.body.uuid, new Date().toISOString(), redis.print);
+};
+
+
 exports.checkJWT = (req, res) => {
   res.status(200).send({ message: "JWT is valid" });
 };
@@ -141,3 +150,27 @@ exports.adminBoard = (req, res) => {
 exports.moderatorBoard = (req, res) => {
   res.status(200).send("Moderator Content.");
 };
+
+
+// Redis update last_seen every 2 minutes
+setInterval(() => {
+  redisClient.keys('*', (err, keys) => {
+    if (err) return console.log(err);
+
+    for (let i = 0, len = keys.length; i < len; i++) {
+      redisClient.get(keys[i], (err, value) => {
+        if (err) return console.log(err);
+
+        if (new Date().getTime() - new Date(value).getTime() > 120000) {
+          User.update({
+            last_seen: value
+          }, {
+              where: {
+                uuid: keys[i]
+              }
+            });
+        }
+      });
+    }
+  });
+}, 120000);
