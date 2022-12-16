@@ -23,7 +23,11 @@ module.exports = {
     min: 0,
     acquire: 30000,
     idle: 10000
-  }
+  },
+  redis: {
+    host: "192.168.1.1",
+    port: 6379,
+  },
 };
 ```
 

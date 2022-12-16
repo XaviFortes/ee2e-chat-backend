@@ -1,10 +1,14 @@
 const db = require("../models");
 const User = db.user;
 const config = require("../config/auth.config");
+const dbConfig = require("../config/db.config");
 const jwt = require("jsonwebtoken");
 const redis = require("redis");
 
-const redisClient = redis.createClient();
+const redisClient = redis.createClient(
+  dbConfig.redis.port,
+  dbConfig.redis.host
+);
 
 redisClient.on("error", function (err) {
   console.log("Error " + err);
