@@ -20,6 +20,8 @@ module.exports = function(app) {
 
   app.get("/api/user/isLogged", controller.isLoggedIn);
 
+  app.get("/api/user/stillLogged", [authJwt.verifyToken], controller.stillLoggedIn);
+
   app.get(
     "/api/test/user",
     [authJwt.verifyToken],
