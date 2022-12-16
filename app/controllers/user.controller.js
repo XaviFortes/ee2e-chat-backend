@@ -108,7 +108,7 @@ exports.editUser = async (req, res) => {
 
 exports.stillLoggedIn = (req, res) => {
   // Update last_seen in database to current time and date (UTC) with redis
-  client.set(req.body.uuid, new Date().toISOString(), redis.print);
+  redisClient.set(req.body.uuid, new Date().toISOString(), redis.print);
 };
 
 
