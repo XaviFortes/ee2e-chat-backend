@@ -6,6 +6,10 @@ const redis = require("redis");
 
 const redisClient = redis.createClient();
 
+redisClient.on("error", function (err) {
+  console.log("Error " + err);
+});
+
 exports.allAccess = async (req, res) => {
   var users = await User.findAll({
     attributes: ['id', 'uuid', 'nick', 'email']
@@ -108,7 +112,8 @@ exports.editUser = async (req, res) => {
 
 exports.stillLoggedIn = (req, res) => {
   // Update last_seen in database to current time and date (UTC) with redis
-  redisClient.set(req.body.uuid, new Date().toISOString(), redis.print);
+  redisClient.set(req.userId, new Date().toISOString(), redis.print);
+  res.status(200).send({ message: "Logged!" });
 };
 
 
