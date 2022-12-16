@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
-const redis = require('redis');
 
 const app = express();
 // Add two origins to the whitelist
@@ -56,18 +55,6 @@ require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 require('./app/routes/chat.routes')(app);
 require('./app/routes/debug.routes')(app);
-
-// Redis
-let redisClient;
-(async () => {
-  redisClient = redis.createClient();
-  redisClient.on('connect', function() {
-    console.log('Redis client connected');
-  });
-  redisClient.on('error', function (err) {
-    console.log('Something went wrong ' + err);
-  });
-})();
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
