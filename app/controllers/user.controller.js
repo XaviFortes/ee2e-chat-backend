@@ -9,6 +9,22 @@ const redisClient = redis.createClient({
   socket: {
     host: dbConfig.redis.host,
     port: dbConfig.redis.port
+  },
+  retry_strategy: function (options) {
+    if (options.error && options.error.code === "ECONNREFUSED") {
+      // End reconnecting on a specific error and flush all commands with a individual error
+      return new Error("The server refused the connection");
+    }
+    if (options.total_retry_time > 1000 * 60 * 60) {
+      // End reconnecting after a specific timeout and flush all commands with a individual error
+      return new Error("Retry time exhausted");
+    }
+    if (options.attempt > 10) {
+      // End reconnecting with built in error
+      return undefined;
+    }
+    // reconnect after
+    return Math.min(options.attempt * 100, 3000);
   }
 });
 
@@ -173,7 +189,13 @@ exports.moderatorBoard = (req, res) => {
 // Redis update last_seen every 2 minutes
 setInterval(async () => {
   console.log("Updating last_seen in database...");
-  await redisClient.connect();
+  // Check if socket is connected
+  if (redisClient.connected) {
+    console.log("Redis connected");
+  } else {
+    console.log("Redis not connected. Connecting...");
+    await redisClient.connect();
+  }
   redisClient.keys('*', (err, keys) => {
     if (err) return console.log(err);
 
