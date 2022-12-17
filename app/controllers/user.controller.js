@@ -174,7 +174,7 @@ exports.moderatorBoard = (req, res) => {
 // Redis update last_seen every 2 minutes
 setInterval(async () => {
   console.log("Updating last_seen in database...");
-  const keys = await redisClient.sendCommand('KEYS', ['*']);
+  const keys = await redisClient.sendCommand(["keys", "*"]);
   keys.forEach(async (key) => {
     var last_seen = await redisClient.get(key);
     User.update({
