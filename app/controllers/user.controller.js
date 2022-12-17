@@ -191,6 +191,7 @@ setInterval(async () => {
   console.log("Updating last_seen in database...");
   // Check if socket is connected
   console.log(redisClient.status);
+  console.log(redisClient.connected);
   if (redisClient.status === "connected") {
     console.log("Redis connected");
   } else{
