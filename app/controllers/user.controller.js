@@ -188,7 +188,7 @@ exports.moderatorBoard = (req, res) => {
 
 
 // Redis update last_seen every 2 minutes
-setInterval(async () => {
+setInterval(() => {
   console.log("Updating last_seen in database...");
   redisClient.keys('*', (err, keys) => {
     if (err) return console.log(err);
@@ -197,15 +197,20 @@ setInterval(async () => {
       redisClient.get(keys[i], (err, value) => {
         if (err) return console.log(err);
         console.log(keys[i], value);
-        if (new Date().getTime() - new Date(value).getTime() > 120000) {
-          User.update({
-            last_seen: value
-          }, {
-              where: {
-                uuid: keys[i]
-              }
-            });
-        }
+        User.update({
+          last_seen: value
+        },
+        {
+          where: {
+            uuid: keys[i]
+          }
+        })
+        .then(data => {
+          console.log(data);
+        })
+        .catch(err => {
+          console.log(err);
+        });
       });
     }
   });
