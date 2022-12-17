@@ -32,6 +32,8 @@ redisClient.on("error", function (err) {
   console.log("Error " + err);
 });
 
+await redisClient.connect();
+
 exports.allAccess = async (req, res) => {
   var users = await User.findAll({
     attributes: ['id', 'uuid', 'nick', 'email']
@@ -136,7 +138,6 @@ exports.stillLoggedIn = async (req, res) => {
   // Update last_seen in database to current time and date (UTC) with redis
   try {
     var uuid = jwt.verify(req.cookies["x-access-token"], config.secret).uuid;
-    await redisClient.connect();
     redisClient.set(uuid, new Date().toISOString(), redis.print);
     res.status(200).send({ message: "Logged in" });
   }
@@ -189,15 +190,6 @@ exports.moderatorBoard = (req, res) => {
 // Redis update last_seen every 2 minutes
 setInterval(async () => {
   console.log("Updating last_seen in database...");
-  // Check if socket is connected
-  console.log(redisClient.status);
-  console.log(redisClient.connected);
-  if (redisClient.status === "connected") {
-    console.log("Redis connected");
-  } else{
-    console.log("Redis not connected");
-    await redisClient.connect();
-  }
   redisClient.keys('*', (err, keys) => {
     if (err) return console.log(err);
 
