@@ -32,7 +32,7 @@ redisClient.on("error", function (err) {
   console.log("Error " + err);
 });
 
-await redisClient.connect();
+redisClient.connect();
 
 exports.allAccess = async (req, res) => {
   var users = await User.findAll({
