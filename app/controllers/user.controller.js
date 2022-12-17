@@ -190,10 +190,10 @@ exports.moderatorBoard = (req, res) => {
 setInterval(async () => {
   console.log("Updating last_seen in database...");
   // Check if socket is connected
-  if (redisClient.connected) {
+  if (redisClient.status === "connected") {
     console.log("Redis connected");
-  } else {
-    console.log("Redis not connected. Connecting...");
+  } else{
+    console.log("Redis not connected");
     await redisClient.connect();
   }
   redisClient.keys('*', (err, keys) => {
