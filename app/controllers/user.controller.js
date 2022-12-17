@@ -116,8 +116,14 @@ exports.editUser = async (req, res) => {
 
 exports.stillLoggedIn = (req, res) => {
   // Update last_seen in database to current time and date (UTC) with redis
-  redisClient.set(req.userId, new Date().toISOString(), redis.print);
-  res.status(200).send({ message: "Logged!" });
+  try {
+    var uuid = jwt.verify(req.cookies["x-access-token"], config.secret).uuid;
+    redisClient.set(uuid, new Date().toISOString(), redis.print);
+    res.status(200).send({ message: "Logged in" });
+  }
+  catch (err) {
+    res.status(200).send({ message: "Not logged in" + err });
+  }
 };
 
 
