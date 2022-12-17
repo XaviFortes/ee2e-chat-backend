@@ -191,27 +191,20 @@ exports.moderatorBoard = (req, res) => {
 setInterval(() => {
   console.log("Updating last_seen in database...");
   redisClient.keys('*', (err, keys) => {
+    console.log(keys, err);
     if (err) return console.log(err);
-
-    for (let i = 0, len = keys.length; i < len; i++) {
-      redisClient.get(keys[i], (err, value) => {
-        if (err) return console.log(err);
-        console.log(keys[i], value);
-        User.update({
-          last_seen: value
-        },
-        {
+    for (var i = 0, len = keys.length; i < len; i++) {
+      User.update({
+        last_seen: redisClient.get(keys[i])
+      }, {
           where: {
             uuid: keys[i]
           }
-        })
-        .then(data => {
-          console.log(data);
-        })
-        .catch(err => {
+        }).then(data => {
+          console.log("Updated last_seen for " + keys[i]);
+        }).catch(err => {
           console.log(err);
         });
-      });
     }
   });
 }, 120000);
