@@ -9,22 +9,6 @@ const redisClient = redis.createClient({
   socket: {
     host: dbConfig.redis.host,
     port: dbConfig.redis.port
-  },
-  retry_strategy: function (options) {
-    if (options.error && options.error.code === "ECONNREFUSED") {
-      // End reconnecting on a specific error and flush all commands with a individual error
-      return new Error("The server refused the connection");
-    }
-    if (options.total_retry_time > 1000 * 60 * 60) {
-      // End reconnecting after a specific timeout and flush all commands with a individual error
-      return new Error("Retry time exhausted");
-    }
-    if (options.attempt > 10) {
-      // End reconnecting with built in error
-      return undefined;
-    }
-    // reconnect after
-    return Math.min(options.attempt * 100, 3000);
   }
 });
 
@@ -188,33 +172,23 @@ exports.moderatorBoard = (req, res) => {
 
 
 // Redis update last_seen every 2 minutes
-setInterval(() => {
+setInterval(async () => {
   console.log("Updating last_seen in database...");
-  redisClient.multi().keys('*', (err, keys) => {
-    console.log("Multi got " + keys.length + " keys");
-    keys.forEach((key) => {
-      redisClient.get(key, (err, value) => {
-        if (err) {
-          console.log(err);
+  const keys = await redisClient.sendCommand('KEYS', ['*']);
+  keys.forEach(async (key) => {
+    var last_seen = await redisClient.get(key);
+    User.update({
+      last_seen: last_seen
+    }, {
+        where: {
+          uuid: key
         }
-        if (value) {
-          User.update({
-            last_seen: value
-          }, {
-              where: {
-                uuid: key
-              }
-            })
-            .then(data => {
-              console.log("Updated last_seen for " + key);
-            })
-            .catch(err => {
-              console.log(err);
-            });
-        }
+      })
+      .then(data => {
+        console.log("Updated last_seen for user " + key);
+      })
+      .catch(err => {
+        console.log(err);
       });
-    });
-  }).exec((err, replies) => {
-    console.log("Executed multi");
-  });	
+  });
 }, 120000);
